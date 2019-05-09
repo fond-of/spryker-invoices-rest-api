@@ -1,6 +1,6 @@
 <?php
 
-namespace Spryker\Glue\InvoiceRestApi\Processor\Invoice;
+namespace FondOfSpryker\Glue\InvoicesRestApi\Processor\Invoice;
 
 use Spryker\Glue\GlueApplication\Rest\JsonApi\RestResourceInterface;
 use Spryker\Glue\GlueApplication\Rest\JsonApi\RestResponseInterface;
@@ -13,14 +13,14 @@ interface InvoiceReaderInterface
      *
      * @return \Spryker\Glue\GlueApplication\Rest\JsonApi\RestResponseInterface
      */
-    public function getInvoices(RestRequestInterface $restRequest): RestResponseInterface;
+    public function getInvoices(RestRequestInterface $restRequest);
 
     /**
      * @param string $orderReference
      *
      * @return \Spryker\Glue\GlueApplication\Rest\JsonApi\RestResourceInterface|null
      */
-    public function findOrderInvoice(string $orderReference): ?RestResourceInterface;
+    //public function findOrderInvoice(string $orderReference): ?RestResourceInterface;
 
     /**
      * @param string $orderReference
@@ -28,5 +28,5 @@ interface InvoiceReaderInterface
      *
      * @return \Spryker\Glue\GlueApplication\Rest\JsonApi\RestResourceInterface|null
      */
-    public function findCustomerInvoices(string $orderReference,  string $customerReference): ?RestResourceInterface;
+   // public function findCustomerInvoices(string $orderReference,  string $customerReference): ?RestResourceInterface;
 }

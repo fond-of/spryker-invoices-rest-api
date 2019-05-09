@@ -1,14 +1,15 @@
 <?php
 
-namespace FondOfSpyker\Glue\InvoicesRestApi\Dependency\Client;
+namespace FondOfSpryker\Glue\InvoicesRestApi\Dependency\Client;
 
-use FondOfSpryker\Glue\InvoicesRestApi\Dependency\Client\InvoicesRestApiToInvoiceClientInterface;
+use Generated\Shared\Transfer\InvoiceResponseTransfer;
+use Generated\Shared\Transfer\InvoiceTransfer;
 
 
 class InvoicesRestApiToInvoiceClientBridge implements InvoicesRestApiToInvoiceClientInterface
 {
     /**
-     * @var \FondOfSpryker\Client\Innvoice\InvoiceClientInterface
+     * @var \FondOfSpryker\Client\Invoice\InvoiceClientInterface
      */
     protected $invoiceClient;
 
@@ -25,8 +26,8 @@ class InvoicesRestApiToInvoiceClientBridge implements InvoicesRestApiToInvoiceCl
      *
      * @return \Generated\Shared\Transfer\InvoiceResponseTransfer
      */
-    public function addInvoice(InvoiceTransfer $invoiceTransfer): InvoiceResponseTransfer
+    public function findInvoiceByOrderReference(InvoiceTransfer $invoiceTransfer): InvoiceResponseTransfer
     {
-        return $this->invoiceClient->($invoiceTransfer);
+        return $this->invoiceClient->findInvoiceByOrderReference($invoiceTransfer);
     }
 }

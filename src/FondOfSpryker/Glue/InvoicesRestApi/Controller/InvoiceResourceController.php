@@ -2,8 +2,7 @@
 
 namespace FondOfSpryker\Glue\InvoicesRestApi\Controller;
 
-use Generated\Shared\Transfer\RestInvoicesItemsTransfer;
-use Generated\Shared\Transfer\RestInvoicesTransfer;
+use Generated\Shared\Transfer\RestInvoiceItemsTransfer;
 use Spryker\Glue\GlueApplication\Rest\JsonApi\RestResponseInterface;
 use Spryker\Glue\GlueApplication\Rest\Request\Data\RestRequestInterface;
 use Spryker\Glue\Kernel\Controller\AbstractController;
@@ -11,26 +10,26 @@ use Spryker\Glue\Kernel\Controller\AbstractController;
 /**
  * @method \Spryker\Glue\InvoicesRestApi\InvoicesRestApiFactory getFactory()
  */
-class InvoicesResourceController extends AbstractController
+class InvoiceResourceController extends AbstractController
 {
     /**
      * @Glue({
      *     "getResourceById": {
      *          "summary": [
-     *              "Retrieves order by id."
+     *              "Retrieves invoice by OrderReference."
      *          ],
      *          "parameters": [{
      *              "name": "Accept-Language",
      *              "in": "header"
      *          }],
-     *          "responseAttributesClassName": "Generated\\Shared\\Transfer\\RestOrderDetailsAttributesTransfer",
+     *          "responseAttributesClassName": "Generated\\Shared\\Transfer\\RestInvoiceOrderDetailsAttributesTransfer",
      *          "responses": {
-     *              "404": "Order not found."
+     *              "404": "Invoice not found."
      *          }
      *     },
      *     "getCollection": {
      *          "summary": [
-     *              "Retrieves list of orders."
+     *              "Retrieves list of Invoices for a Customer."
      *          ],
      *          "parameters": [{
      *              "name": "Accept-Language",
@@ -71,7 +70,7 @@ class InvoicesResourceController extends AbstractController
      *
      * @return \Spryker\Glue\GlueApplication\Rest\JsonApi\RestResponseInterface
      */
-    public function postAction(RestRequestInterface $restRequest, RestInvoicesTransfer $restInvoicesTransfer): RestResponseInterface
+    /*public function postAction(RestRequestInterface $restRequest, RestInvoicesTransfer $restInvoicesTransfer): RestResponseInterface
     {
         return $this->getFactory()
             ->createInvoiceReader()
@@ -79,7 +78,7 @@ class InvoicesResourceController extends AbstractController
                 $restRequest,
                 $restInvoicesTransfer
             );
-    }
+    }*/
 
     /**
      * @Glue({
@@ -104,7 +103,7 @@ class InvoicesResourceController extends AbstractController
      *
      * @return \Spryker\Glue\GlueApplication\Rest\JsonApi\RestResponseInterface
      */
-    public function patchAction(RestRequestInterface $restRequest, RestInvoicesItemsTransfer $restInvoicesItemTransfer): RestResponseInterface
+    /*public function patchAction(RestRequestInterface $restRequest, RestInvoicesItemsTransfer $restInvoicesItemTransfer): RestResponseInterface
     {
         return $this->getFactory()
             ->createInvoiceItemUpdater()
@@ -112,6 +111,6 @@ class InvoicesResourceController extends AbstractController
                 $restRequest,
                 $restInvoicesItemTransfer
             );
-    }
+    }*/
 
 }

@@ -9,7 +9,7 @@ class InvoicesRestApiConfig extends AbstractBundleConfig
     public const RESOURCE_INVOICES = 'invoices';
     public const RESOURCE_INVOICE_ITEMS = 'items';
 
-    public const CONTROLLER_INVOICES = 'invoices-resource';
+    public const CONTROLLER_INVOICES = 'invoice-resource';
     public const CONTROLLER_INVOICE_ITEMS = 'invoice-items-resource';
 
     public const ACTION_INVOICES_GET = 'get';
@@ -18,7 +18,6 @@ class InvoicesRestApiConfig extends AbstractBundleConfig
     public const ACTION_INVOICE_ITEMS_POST = 'post';
     public const ACTION_INVOICE_ITEMS_PATCH = 'patch';
 
-    public const RESPONSE_CODE_INVOICE_NOT_FOUND = '101';
     public const RESPONSE_CODE_ITEM_VALIDATION = '102';
     public const RESPONSE_CODE_ITEM_NOT_FOUND = '103';
     public const RESPONSE_CODE_INVOICE_ID_MISSING = '104';
@@ -27,5 +26,11 @@ class InvoicesRestApiConfig extends AbstractBundleConfig
     public const EXCEPTION_MESSAGE_INVOICE_ID_MISSING = 'Invoice uuid is missing.';
     public const EXCEPTION_MESSAGE_FAILED_TO_CREATE_INVOICE = 'Failed to create invoice.';
     public const EXCEPTION_MESSAGE_INVOICE_WITH_ID_NOT_FOUND = 'Invoice with given uuid not found.';
+    
+    public const REST_RESOURCE_ATTRIBUTE_ORDER_REFERENCE = "orderReference";
+    public const REST_RESOURCE_ATTRIBUTE_CUSTOMER_REFERENCE = "customerReference";
+
+    public const RESPONSE_CODE_INVOICE_NOT_FOUND = '101';
+    public const RESPONSE_DETAILS_INVOICE_NOT_FOUND = 'Invoice not found.';
     
 }

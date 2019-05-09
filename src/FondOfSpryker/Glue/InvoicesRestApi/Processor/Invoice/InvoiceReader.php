@@ -1,50 +1,61 @@
 <?php
 
-namespace Spryker\Glue\InvoiceRestApi\Processor\Order;
+namespace FondOfSpryker\Glue\InvoicesRestApi\Processor\Invoice;
 
-use Generated\Shared\Transfer\OrderListTransfer;
+use FondOfSpryker\Glue\InvoicesRestApi\InvoicesRestApiConfig;
+use FondOfSpryker\Glue\InvoicesRestApi\Dependency\Client\InvoicesRestApiToInvoiceClientInterface;
+use FondOfSpryker\Glue\InvoicesRestApi\Processor\Mapper\InvoiceResourceMapperInterface;
+use Generated\Shared\Transfer\InvoiceResponseTransfer;
 use Generated\Shared\Transfer\InvoiceTransfer;
-use Generated\Shared\Transfer\PaginationTransfer;
-use Generated\Shared\Transfer\RestErrorMessageTransfer;
 use Spryker\Glue\GlueApplication\Rest\JsonApi\RestResourceBuilderInterface;
-use Spryker\Glue\GlueApplication\Rest\JsonApi\RestResourceInterface;
+use FondOfSpryker\Glue\InvoicesRestApi\Processor\Validation\RestApiErrorInterface;
+use FondOfSpryker\Glue\InvoicesRestApi\Processor\Validation\RestApiValidatorInterface;
 use Spryker\Glue\GlueApplication\Rest\JsonApi\RestResponseInterface;
 use Spryker\Glue\GlueApplication\Rest\Request\Data\RestRequestInterface;
-use Spryker\Glue\OrdersRestApi\Dependency\Client\OrdersRestApiToSalesClientInterface;
-use Spryker\Glue\OrdersRestApi\OrdersRestApiConfig;
-use Spryker\Glue\OrdersRestApi\Processor\Mapper\OrderResourceMapperInterface;
-use Symfony\Component\HttpFoundation\Response;
+
 
 class InvoiceReader implements InvoiceReaderInterface
 {
     /**
      * @var \Spryker\Glue\OrdersRestApi\Dependency\Client\OrdersRestApiToSalesClientInterface
      */
-    protected $salesClient;
+    protected $invoiceClient;
+
+    /**
+     * @var \FondOfSpryker\Glue\InvoicesRestApi\Processor\Mapper\InvoiceResourceMapperInterface
+     */
+    protected $invoiceResourceMapper;
+
+    /**
+     * @var \FondOfSpryker\Glue\InvoicesRestApi\Processor\Validation\RestApiErrorInterface
+     */
+    protected $restApiError;
+
+    /**
+     * @var \FondOfSpryker\Glue\InvoicesRestApi\Processor\Validation\RestApiValidatorInterface
+     */
+    protected $restApiValidator;
 
     /**
      * @var \Spryker\Glue\GlueApplication\Rest\JsonApi\RestResourceBuilderInterface
      */
     protected $restResourceBuilder;
 
-    /**
-     * @var \Spryker\Glue\OrdersRestApi\Processor\Mapper\OrderResourceMapperInterface
-     */
-    protected $orderResourceMapper;
 
-    /**
-     * @param \Spryker\Glue\OrdersRestApi\Dependency\Client\OrdersRestApiToSalesClientInterface $salesClient
-     * @param \Spryker\Glue\GlueApplication\Rest\JsonApi\RestResourceBuilderInterface $restResourceBuilder
-     * @param \Spryker\Glue\OrdersRestApi\Processor\Mapper\OrderResourceMapperInterface $orderResourceMapper
-     */
     public function __construct(
-        OrdersRestApiToSalesClientInterface $salesClient,
+        InvoicesRestApiToInvoiceClientInterface $invoiceClient,
+        InvoiceResourceMapperInterface $invoiceResourceMapper,
         RestResourceBuilderInterface $restResourceBuilder,
-        OrderResourceMapperInterface $orderResourceMapper
+        RestApiErrorInterface $restApiError,
+        RestApiValidatorInterface $restApiValidator
     ) {
-        $this->salesClient = $salesClient;
+
+        $this->invoiceClient = $invoiceClient;
+        $this->invoiceResourceMapper = $invoiceResourceMapper;
+        $this->restApiError = $restApiError;
+        $this->restApiValidator = $restApiValidator;
         $this->restResourceBuilder = $restResourceBuilder;
-        $this->orderResourceMapper = $orderResourceMapper;
+
     }
 
     /**
@@ -54,151 +65,47 @@ class InvoiceReader implements InvoiceReaderInterface
      */
     public function getInvoices(RestRequestInterface $restRequest): RestResponseInterface
     {
-        if ($restRequest->getResource()->getId()) {
-            return $this->getOrderDetailsResourceAttributes(
-                $restRequest->getResource()->getId(),
-                $restRequest->getUser()->getNaturalIdentifier()
-            );
-        }
+        $restResponse = $this->restResourceBuilder->createRestResponse();
 
-        return $this->getOrderListAttributes($restRequest);
-    }
-
-    /**
-     * @param string $orderReference
-     * @param string $customerReference
-     *
-     * @return \Spryker\Glue\GlueApplication\Rest\JsonApi\RestResourceInterface|null
-     */
-    public function findCustomerInvoices(string $orderReference, string $customerReference): ?RestResourceInterface
-    {
-        $invoiceTransfer = (new InvoiceTransfer())
-            ->setOrderReference($orderReference)
-            ->setCustomerReference($customerReference);
-        $orderTransfer = $this->salesClient->getCustomerOrderByOrderReference($orderTransfer);
-
-        if ($orderTransfer->getIdSalesOrder() === null) {
-            return null;
-        }
-
-        $restOrderDetailsAttributesTransfer = $this->orderResourceMapper->mapOrderTransferToRestOrderDetailsAttributesTransfer($orderTransfer);
-
-        $restResource = $this->restResourceBuilder->createRestResource(
-            OrdersRestApiConfig::RESOURCE_ORDERS,
-            $orderReference,
-            $restOrderDetailsAttributesTransfer
-        );
-
-        return $restResource;
-    }
-
-    public function findOrderInvoice(string $orderReference): ?RestResourceInterface
-    {
-        $orderTransfer = (new OrderTransfer())
-            ->setOrderReference($orderReference)
-            ->setCustomerReference($customerReference);
-        $orderTransfer = $this->salesClient->getCustomerOrderByOrderReference($orderTransfer);
-
-        if ($orderTransfer->getIdSalesOrder() === null) {
-            return null;
-        }
-
-        $restOrderDetailsAttributesTransfer = $this->orderResourceMapper->mapOrderTransferToRestOrderDetailsAttributesTransfer($orderTransfer);
-
-        $restResource = $this->restResourceBuilder->createRestResource(
-            OrdersRestApiConfig::RESOURCE_ORDERS,
-            $orderReference,
-            $restOrderDetailsAttributesTransfer
-        );
-
-        return $restResource;
-    }
-
-    /**
-     * @param \Spryker\Glue\GlueApplication\Rest\Request\Data\RestRequestInterface $restRequest
-     *
-     * @return \Spryker\Glue\GlueApplication\Rest\JsonApi\RestResponseInterface
-     */
-    protected function getOrderListAttributes(RestRequestInterface $restRequest): RestResponseInterface
-    {
-        $customerId = $restRequest->getUser()->getSurrogateIdentifier();
-        $orderListTransfer = (new OrderListTransfer())->setIdCustomer((int)$customerId);
-
-        $limit = 0;
-        if ($restRequest->getPage()) {
-            $offset = $restRequest->getPage()->getOffset();
-            $limit = $restRequest->getPage()->getLimit();
-
-            $orderListTransfer->setPagination($this->createPaginationTransfer(++$offset, $limit));
-        }
-
-        $orderListTransfer = $this->salesClient->getPaginatedOrder($orderListTransfer);
-        $response = $this
-            ->restResourceBuilder
-            ->createRestResponse(
-                $orderListTransfer->getPagination() !== null ? $orderListTransfer->getPagination()->getNbResults() : 0,
-                $limit
-            );
-
-        foreach ($orderListTransfer->getOrders() as $orderTransfer) {
-            $restOrdersAttributesTransfer = $this->orderResourceMapper->mapOrderTransferToRestOrdersAttributesTransfer($orderTransfer);
-
-            $response = $response->addResource(
-                $this->restResourceBuilder->createRestResource(
-                    OrdersRestApiConfig::RESOURCE_ORDERS,
-                    $orderTransfer->getOrderReference(),
-                    $restOrdersAttributesTransfer
+        if ($restRequest->getResource()->getAttributes()->offsetGet(InvoicesRestApiConfig::REST_RESOURCE_ATTRIBUTE_ORDER_REFERENCE)) {
+            $invoiceResponseTransfer = $this->findInvoiceByOrderReference(
+                $restRequest->getResource()->getAttributes()->offsetGet(
+                    InvoicesRestApiConfig::REST_RESOURCE_ATTRIBUTE_ORDER_REFERENCE
                 )
             );
         }
 
-        return $response;
+        if (!$invoiceResponseTransfer->getHasInvoice()) {
+            return $this->restApiError->addInvoiceNotFoundError($restResponse);
+        }
+
+
+        $restInvoiceResponseAttributesTransfer = $this
+            ->invoiceResourceMapper->mapInvoiceTransferToRestInvoicesAttributesTransfer($invoiceResponseTransfer->getInvoiceTransfer());
+
+
+        $restResource = $this->restResourceBuilder->createRestResource(
+            InvoicesRestApiConfig::RESOURCE_INVOICES,
+            $invoiceResponseTransfer->getInvoiceTransfer()->getOrderReference(),
+            $restInvoiceResponseAttributesTransfer
+        );
+
+        $restResponse->addResource($restResource);
+
+        return $restResponse;
     }
 
     /**
      * @param string $orderReference
-     * @param string $customerReference
      *
-     * @return \Spryker\Glue\GlueApplication\Rest\JsonApi\RestResponseInterface
+     * @return \Generated\Shared\Transfer\InvoiceResponseTransfer
      */
-    protected function getOrderDetailsResourceAttributes(string $orderReference, string $customerReference): RestResponseInterface
+    public function findInvoiceByOrderReference(string $orderReference): InvoiceResponseTransfer
     {
-        $response = $this->restResourceBuilder->createRestResponse();
+        $invoiceTransfer = (new InvoiceTransfer())->setOrderReference($orderReference);
 
-        $orderRestResource = $this->findCustomerOrder($orderReference, $customerReference);
+        return $this->invoiceClient->findInvoiceByOrderReference($invoiceTransfer);
 
-        if (!$orderRestResource) {
-            return $this->createOrderNotFoundErrorResponse($response);
-        }
-
-        return $response->addResource($orderRestResource);
     }
 
-    /**
-     * @param \Spryker\Glue\GlueApplication\Rest\JsonApi\RestResponseInterface $restResponse
-     *
-     * @return \Spryker\Glue\GlueApplication\Rest\JsonApi\RestResponseInterface
-     */
-    protected function createOrderNotFoundErrorResponse(RestResponseInterface $restResponse): RestResponseInterface
-    {
-        $restErrorTransfer = (new RestErrorMessageTransfer())
-            ->setCode(OrdersRestApiConfig::RESPONSE_CODE_CANT_FIND_ORDER)
-            ->setStatus(Response::HTTP_NOT_FOUND)
-            ->setDetail(OrdersRestApiConfig::RESPONSE_DETAIL_CANT_FIND_ORDER);
-
-        return $restResponse->addError($restErrorTransfer);
-    }
-
-    /**
-     * @param int $offset
-     * @param int $limit
-     *
-     * @return \Generated\Shared\Transfer\PaginationTransfer
-     */
-    protected function createPaginationTransfer(int $offset, int $limit): PaginationTransfer
-    {
-        return (new PaginationTransfer())
-            ->setPage($offset)
-            ->setMaxPerPage($limit);
-    }
 }

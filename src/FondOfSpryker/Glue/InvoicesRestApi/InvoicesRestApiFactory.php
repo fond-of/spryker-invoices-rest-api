@@ -1,52 +1,63 @@
 <?php
 
-namespace Spryker\Glue\OrdersRestApi;
+namespace FondOfSpryker\Glue\InvoicesRestApi;
 
-use Spryker\Glue\InvoiceRestApi\Processor\Order\InvoiceReader;
+use FondOfSpryker\Glue\InvoicesRestApi\Processor\Invoice\InvoiceReader;
+use FondOfSpryker\Glue\InvoicesRestApi\Dependency\Client\InvoicesRestApiToInvoiceClientInterface;
+use FondOfSpryker\Glue\InvoicesRestApi\Processor\Invoice\InvoiceReaderInterface;
+use FondOfSpryker\Glue\InvoicesRestApi\Processor\Mapper\InvoiceResourceMapper;
+use FondOfSpryker\Glue\InvoicesRestApi\Processor\Mapper\InvoiceResourceMapperInterface;
+use FondOfSpryker\Glue\InvoicesRestApi\Processor\Validation\RestApiError;
+use FondOfSpryker\Glue\InvoicesRestApi\Processor\Validation\RestApiErrorInterface;
+use FondOfSpryker\Glue\InvoicesRestApi\Processor\Validation\RestApiValidator;
+use FondOfSpryker\Glue\InvoicesRestApi\Processor\Validation\RestApiValidatorInterface;
 use Spryker\Glue\Kernel\AbstractFactory;
-use Spryker\Glue\OrdersRestApi\Dependency\Client\OrdersRestApiToSalesClientInterface;
-use Spryker\Glue\OrdersRestApi\Processor\Expander\OrderByOrderReferenceResourceRelationshipExpander;
-use Spryker\Glue\OrdersRestApi\Processor\Expander\OrderByOrderReferenceResourceRelationshipExpanderInterface;
-use Spryker\Glue\OrdersRestApi\Processor\Mapper\OrderResourceMapper;
-use Spryker\Glue\OrdersRestApi\Processor\Mapper\OrderResourceMapperInterface;
-use Spryker\Glue\OrdersRestApi\Processor\Order\OrderReader;
-use Spryker\Glue\OrdersRestApi\Processor\Order\OrderReaderInterface;
 
 class InvoicesRestApiFactory extends AbstractFactory
 {
     /**
      * @return \Spryker\Glue\OrdersRestApi\Processor\Order\OrderReaderInterface
      */
-    public function createInvoicesReader(): InvoicesReaderInterface
+    public function createInvoiceReader(): InvoiceReaderInterface
     {
         return new InvoiceReader(
-            $this->getSalesClient(),
+            $this->getInvoiceClient(),
+            $this->createInvoiceResourceMapper(),
             $this->getResourceBuilder(),
-            $this->createOrderResourceMapper()
+            $this->createRestApiError(),
+            $this->createRestApiValidator()
         );
     }
 
     /**
-     * @return \Spryker\Glue\OrdersRestApi\Processor\Mapper\OrderResourceMapperInterface
+     * @return \FondOfSpryker\Glue\InvoiceRestApi\Dependency\Client\InvoicesRestApiToInvoiceClientInterface
      */
-    public function createOrderResourceMapper(): OrderResourceMapperInterface
+    public function getInvoiceClient(): InvoicesRestApiToInvoiceClientInterface
     {
-        return new OrderResourceMapper();
+        return $this->getProvidedDependency(InvoicesRestApiDependencyProvider::CLIENT_INVOICE);
     }
 
     /**
-     * @return \Spryker\Glue\OrdersRestApi\Processor\Expander\OrderByOrderReferenceResourceRelationshipExpanderInterface
+     * @return \FondOfSpyker\Glue\InvoicesRestApi\Processor\Mapper\InvoicesResourceMapperInterface
      */
-    public function createOrderByOrderReferenceResourceRelationshipExpander(): OrderByOrderReferenceResourceRelationshipExpanderInterface
+    public function createInvoiceResourceMapper(): InvoiceResourceMapperInterface
     {
-        return new OrderByOrderReferenceResourceRelationshipExpander($this->createOrderReader());
+        return new InvoiceResourceMapper();
     }
 
     /**
-     * @return \Spryker\Glue\OrdersRestApi\Dependency\Client\OrdersRestApiToSalesClientInterface
+     * @return \FondOfSpryker\Glue\InvoicesRestApi\Processor\Validation\RestApiValidatorInterface
      */
-    public function getSalesClient(): OrdersRestApiToSalesClientInterface
+    public function createRestApiValidator(): RestApiValidatorInterface
     {
-        return $this->getProvidedDependency(OrdersRestApiDependencyProvider::CLIENT_SALES);
+        return new RestApiValidator($this->createRestApiError());
+    }
+
+    /**
+     * @return \FondOfSpryker\Glue\InvoicesRestApi\Processor\Validation\RestApiErrorInterface
+     */
+    public function createRestApiError(): RestApiErrorInterface
+    {
+        return new RestApiError();
     }
 }
