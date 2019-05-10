@@ -5,6 +5,8 @@ namespace FondOfSpryker\Glue\InvoicesRestApi;
 use FondOfSpryker\Glue\InvoicesRestApi\Processor\Invoice\InvoiceReader;
 use FondOfSpryker\Glue\InvoicesRestApi\Dependency\Client\InvoicesRestApiToInvoiceClientInterface;
 use FondOfSpryker\Glue\InvoicesRestApi\Processor\Invoice\InvoiceReaderInterface;
+use FondOfSpryker\Glue\InvoicesRestApi\Processor\Invoice\InvoiceWriter;
+use FondOfSpryker\Glue\InvoicesRestApi\Processor\Invoice\InvoiceWriterInterface;
 use FondOfSpryker\Glue\InvoicesRestApi\Processor\Mapper\InvoiceResourceMapper;
 use FondOfSpryker\Glue\InvoicesRestApi\Processor\Mapper\InvoiceResourceMapperInterface;
 use FondOfSpryker\Glue\InvoicesRestApi\Processor\Validation\RestApiError;
@@ -29,6 +31,21 @@ class InvoicesRestApiFactory extends AbstractFactory
         );
     }
 
+    /**
+     * @return \Spryker\Glue\CustomersRestApi\Processor\Customer\CustomerWriterInterface
+     */
+    public function createInvoiceWriter(): InvoiceWriterInterface
+    {
+        return new InvoiceWriter(
+            $this->getInvoiceClient(),
+            $this->createInvoiceReader(),
+            $this->getResourceBuilder(),
+            $this->createInvoiceResourceMapper(),
+            $this->createRestApiError(),
+            $this->createRestApiValidator(),
+            $this->getInvoicePostCreatePlugins()
+        );
+    }
     /**
      * @return \FondOfSpryker\Glue\InvoiceRestApi\Dependency\Client\InvoicesRestApiToInvoiceClientInterface
      */
@@ -59,5 +76,13 @@ class InvoicesRestApiFactory extends AbstractFactory
     public function createRestApiError(): RestApiErrorInterface
     {
         return new RestApiError();
+    }
+
+    /**
+     * @return \FondOfSpryker\Glue\InvoicesRestApiExtension\Dependency\Plugin\Invoice PostRegisterPluginInterface[]
+     */
+    public function getInvoicePostCreatePlugins(): array
+    {
+        return $this->getProvidedDependency(InvoicesRestApiDependencyProvider::PLUGINS_INVOICE_POST_CREATE);
     }
 }

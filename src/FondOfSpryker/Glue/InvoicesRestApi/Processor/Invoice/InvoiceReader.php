@@ -95,6 +95,44 @@ class InvoiceReader implements InvoiceReaderInterface
         return $restResponse;
     }
 
+
+    /**
+     * @param \Spryker\Glue\GlueApplication\Rest\Request\Data\RestRequestInterface $restRequest
+     *
+     * @return \Spryker\Glue\GlueApplication\Rest\JsonApi\RestResponseInterface
+     */
+    public function addInvoices(RestRequestInterface $restRequest): RestResponseInterface
+    {
+        $restResponse = $this->restResourceBuilder->createRestResponse();
+
+        if ($restRequest->getResource()->getAttributes()->offsetGet(InvoicesRestApiConfig::REST_RESOURCE_ATTRIBUTE_ORDER_REFERENCE)) {
+            $invoiceResponseTransfer = $this->findInvoiceByOrderReference(
+                $restRequest->getResource()->getAttributes()->offsetGet(
+                    InvoicesRestApiConfig::REST_RESOURCE_ATTRIBUTE_ORDER_REFERENCE
+                )
+            );
+        }
+
+        if (!$invoiceResponseTransfer->getHasInvoice()) {
+            return $this->restApiError->addInvoiceNotFoundError($restResponse);
+        }
+
+
+        $restInvoiceResponseAttributesTransfer = $this
+            ->invoiceResourceMapper->mapInvoiceTransferToRestInvoicesAttributesTransfer($invoiceResponseTransfer->getInvoiceTransfer());
+
+
+        $restResource = $this->restResourceBuilder->createRestResource(
+            InvoicesRestApiConfig::RESOURCE_INVOICES,
+            $invoiceResponseTransfer->getInvoiceTransfer()->getOrderReference(),
+            $restInvoiceResponseAttributesTransfer
+        );
+
+        $restResponse->addResource($restResource);
+
+        return $restResponse;
+    }
+
     /**
      * @param string $orderReference
      *

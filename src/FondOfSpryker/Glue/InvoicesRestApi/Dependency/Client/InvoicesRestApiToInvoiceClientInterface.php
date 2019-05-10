@@ -14,4 +14,11 @@ interface InvoicesRestApiToInvoiceClientInterface
      */
     public function findInvoiceByOrderReference(InvoiceTransfer $invoiceTransfer): InvoiceResponseTransfer;
 
+    /**
+     * @param \Generated\Shared\Transfer\InvoiceTransfer $invoiceTransfer
+     *
+     * @return \Generated\Shared\Transfer\InvoiceResponseTransfer
+     */
+    public function createInvoice(InvoiceTransfer $invoiceTransfer);
+
 }

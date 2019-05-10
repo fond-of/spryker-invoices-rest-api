@@ -32,5 +32,8 @@ class InvoicesRestApiConfig extends AbstractBundleConfig
 
     public const RESPONSE_CODE_INVOICE_NOT_FOUND = '101';
     public const RESPONSE_DETAILS_INVOICE_NOT_FOUND = 'Invoice not found.';
+    public const RESPONSE_MESSAGE_INVOICE_CANT_CREATE_INVOICE = 'Invoice can not be created';
+
+
     
 }

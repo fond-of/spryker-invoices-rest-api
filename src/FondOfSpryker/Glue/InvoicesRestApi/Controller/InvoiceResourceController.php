@@ -3,6 +3,8 @@
 namespace FondOfSpryker\Glue\InvoicesRestApi\Controller;
 
 use Generated\Shared\Transfer\RestInvoiceItemsTransfer;
+use Generated\Shared\Transfer\RestInvoicesAttributesTransfer;
+use Generated\Shared\Transfer\RestInvoicesTransfer;
 use Spryker\Glue\GlueApplication\Rest\JsonApi\RestResponseInterface;
 use Spryker\Glue\GlueApplication\Rest\Request\Data\RestRequestInterface;
 use Spryker\Glue\Kernel\Controller\AbstractController;
@@ -51,15 +53,15 @@ class InvoiceResourceController extends AbstractController
      * @Glue({
      *     "post": {
      *          "summary": [
-     *              "Adds an item to the cart."
+     *              "Adds an invoice item"
      *          ],
      *          "parameters": [{
      *              "name": "Accept-Language",
      *              "in": "header"
      *          }],
      *          "responses": {
-     *              "400": "Cart id is missing.",
-     *              "404": "Cart not found.",
+     *              "400": "Order Reference is missing.",
+     *              "404": "Order not found.",
      *              "422": "Errors appeared during item creation."
      *          }
      *     }
@@ -70,15 +72,10 @@ class InvoiceResourceController extends AbstractController
      *
      * @return \Spryker\Glue\GlueApplication\Rest\JsonApi\RestResponseInterface
      */
-    /*public function postAction(RestRequestInterface $restRequest, RestInvoicesTransfer $restInvoicesTransfer): RestResponseInterface
+    public function postAction(RestRequestInterface $restRequest, RestInvoicesAttributesTransfer $restInvoicesAttributesTransfer): RestResponseInterface
     {
-        return $this->getFactory()
-            ->createInvoiceReader()
-            ->addItem(
-                $restRequest,
-                $restInvoicesTransfer
-            );
-    }*/
+        return $this->getFactory()->createInvoiceWriter()->createInvoice($restInvoicesAttributesTransfer);
+    }
 
     /**
      * @Glue({

@@ -3,6 +3,7 @@
 namespace FondOfSpryker\Glue\InvoicesRestApi\Plugin\ResourceRoute;
 
 use FondOfSpryker\Glue\InvoicesRestApi\InvoicesRestApiConfig;
+use Generated\Shared\Transfer\RestInvoicesAttributesTransfer;
 use Generated\Shared\Transfer\RestInvoicesTransfer;
 use Spryker\Glue\GlueApplicationExtension\Dependency\Plugin\ResourceRouteCollectionInterface;
 use Spryker\Glue\GlueApplicationExtension\Dependency\Plugin\ResourceRoutePluginInterface;
@@ -25,8 +26,8 @@ class InvoicesResourceRoutePlugin extends AbstractPlugin implements ResourceRout
     public function configure(ResourceRouteCollectionInterface $resourceRouteCollection): ResourceRouteCollectionInterface
     {
         $resourceRouteCollection
-            ->addGet(InvoicesRestApiConfig::ACTION_INVOICES_GET);
-            //->addPost(InvoicesRestApiConfig::ACTION_INVOICES_POST);
+            ->addGet(InvoicesRestApiConfig::ACTION_INVOICES_GET)
+            ->addPost(InvoicesRestApiConfig::ACTION_INVOICES_POST);
 
         return $resourceRouteCollection;
     }
@@ -64,6 +65,6 @@ class InvoicesResourceRoutePlugin extends AbstractPlugin implements ResourceRout
      */
     public function getResourceAttributesClassName(): string
     {
-        return RestInvoicesTransfer::class;
+        return RestInvoicesAttributesTransfer::class;
     }
 }

@@ -30,4 +30,15 @@ class InvoicesRestApiToInvoiceClientBridge implements InvoicesRestApiToInvoiceCl
     {
         return $this->invoiceClient->findInvoiceByOrderReference($invoiceTransfer);
     }
+
+    /**
+     * @param \Generated\Shared\Transfer\InvoiceTransfer $invoiceTransfer
+     *
+     * @return \Generated\Shared\Transfer\InvoiceResponseTransfer
+     */
+    public function createInvoice(InvoiceTransfer $invoiceTransfer): InvoiceResponseTransfer
+    {
+        return $this->invoiceClient->createInvoice($invoiceTransfer);
+    }
+
 }
