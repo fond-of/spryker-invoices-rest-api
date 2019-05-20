@@ -87,7 +87,6 @@ class InvoiceWriter implements InvoiceWriterInterface
     public function createInvoice(RestInvoicesAttributesTransfer $restInvoicesAttributesTransfer): RestResponseInterface
     {
         $restResponse = $this->restResourceBuilder->createRestResponse();
-
         $invoiceTransfer = (new InvoiceTransfer())->fromArray($restInvoicesAttributesTransfer->toArray(), true);
         $invoiceResponseTransfer = $this->invoiceClient->createInvoice($invoiceTransfer);
 
@@ -107,7 +106,6 @@ class InvoiceWriter implements InvoiceWriterInterface
 
         return $restResponse->addResource($restResource);
     }
-
 
 
     /**

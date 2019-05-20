@@ -34,6 +34,10 @@ class InvoicesRestApiConfig extends AbstractBundleConfig
     public const RESPONSE_DETAILS_INVOICE_NOT_FOUND = 'Invoice not found.';
     public const RESPONSE_MESSAGE_INVOICE_CANT_CREATE_INVOICE = 'Invoice can not be created';
 
+    public const QUERY_STRING_PARAMETER_CUSTOMER_REFERENCE = 'customer_reference';
+
+
+
 
     
 }

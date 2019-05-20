@@ -13,20 +13,5 @@ interface InvoiceReaderInterface
      *
      * @return \Spryker\Glue\GlueApplication\Rest\JsonApi\RestResponseInterface
      */
-    public function getInvoices(RestRequestInterface $restRequest);
-
-    /**
-     * @param string $orderReference
-     *
-     * @return \Spryker\Glue\GlueApplication\Rest\JsonApi\RestResourceInterface|null
-     */
-    //public function findOrderInvoice(string $orderReference): ?RestResourceInterface;
-
-    /**
-     * @param string $orderReference
-     * @param string $customerReference
-     *
-     * @return \Spryker\Glue\GlueApplication\Rest\JsonApi\RestResourceInterface|null
-     */
-   // public function findCustomerInvoices(string $orderReference,  string $customerReference): ?RestResourceInterface;
+    public function getInvoiceAttributes(RestRequestInterface $restRequest): RestResponseInterface;
 }

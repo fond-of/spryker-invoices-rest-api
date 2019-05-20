@@ -2,6 +2,7 @@
 
 namespace FondOfSpryker\Glue\InvoicesRestApi\Dependency\Client;
 
+use Generated\Shared\Transfer\InvoiceListTransfer;
 use Generated\Shared\Transfer\InvoiceResponseTransfer;
 use Generated\Shared\Transfer\InvoiceTransfer;
 
@@ -26,9 +27,9 @@ class InvoicesRestApiToInvoiceClientBridge implements InvoicesRestApiToInvoiceCl
      *
      * @return \Generated\Shared\Transfer\InvoiceResponseTransfer
      */
-    public function findInvoiceByOrderReference(InvoiceTransfer $invoiceTransfer): InvoiceResponseTransfer
+    public function findInvoicesByCustomerReference(InvoiceListTransfer $invoiceListTransfer): InvoiceListTransfer
     {
-        return $this->invoiceClient->findInvoiceByOrderReference($invoiceTransfer);
+        return $this->invoiceClient->findInvoicesByCustomerReference($invoiceListTransfer);
     }
 
     /**

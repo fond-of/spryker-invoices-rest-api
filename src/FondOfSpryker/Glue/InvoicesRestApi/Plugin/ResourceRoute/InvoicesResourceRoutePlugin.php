@@ -27,7 +27,8 @@ class InvoicesResourceRoutePlugin extends AbstractPlugin implements ResourceRout
     {
         $resourceRouteCollection
             ->addGet(InvoicesRestApiConfig::ACTION_INVOICES_GET)
-            ->addPost(InvoicesRestApiConfig::ACTION_INVOICES_POST);
+            ->addPost(InvoicesRestApiConfig::ACTION_INVOICES_POST)
+            ->addPatch(InvoicesRestApiConfig::ACTION_INVOICE_ITEMS_PATCH);
 
         return $resourceRouteCollection;
     }
